@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        #small{
+            position: relative;
+        }
+        #small img{
+            display: block;
+        }
+        #small,#big{
+            float: left;
+        }
+        #drag{
+            background: #cccccc;
+            opacity: .6;
+            filter: alpha(opacity = 60);
+            width: 200px;
+            height: 200px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: none;
+        }
+        #big{
+            width: 400px;
+            height: 400px;
+            overflow: hidden;
+            display: none;
+            position: relative;
+        }
+        #big-pic{
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="small">
+        <img src="1.jpg" alt=""/>
+        <div id="drag"></div>
+    </div>
+    <div id="big">
+        <img src="2.jpg" alt="" id="big-pic"/>
+    </div>
+
+    <script src="../jquery-1.11.2.js"></script>
+    <script>
+        var oSmall = document.getElementById("small");
+        var oDrag = document.getElementById("drag");
+        var oBig = document.getElementById("big");
+        var oBigPic = document.getElementById("big-pic");
+        oSmall.onmouseover = function(){
+            oDrag.style.display = "block";
+            oBig.style.display = "block";
+        };
+        oSmall.onmouseout = function(){
+            oDrag.style.display = "none";
+            oBig.style.display = "none";
+        };
+        oSmall.onmousemove = function(e){
+            e = e || window.event;
+            var top = e.clientY - oDrag.offsetHeight / 2;
+            var left = e.clientX - oDrag.offsetWidth / 2;
+            var xMax = oSmall.offsetWidth - oDrag.offsetWidth;
+            var yMax = oSmall.offsetHeight - oDrag.offsetHeight;
+            if(top < 0){
+                top = 0;
+            }
+            if(left < 0){
+                left = 0;
+            }
+            if(left > xMax){
+                left = xMax;
+            }
+            if(top > yMax){
+                top = yMax;
+            }
+            oDrag.style.top = top + "px";
+            oDrag.style.left = left + "px";
+            oBigPic.style.top = -(left / xMax * (oBigPic.offsetWidth - oBig.offsetWidth)) + "px";
+            oBigPic.style.left = -(top / yMax * (oBigPic.offsetHeight - oBig.offsetHeight)) + "px";
+        };
+    </script>
+</body>
+</html>
