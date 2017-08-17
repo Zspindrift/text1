@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>旋转照片墙</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        body,html{
+            width: 100%;
+            height: 100%;
+        }
+        #container{
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background-image: url(img/bg.jpg);
+        }
+        #container .img{
+            width: 125px;
+            height: 125px;
+            border: 5px solid #ffffff;
+            -webkit-box-shadow: 2px 2px 2px 2px rgba(0,0,0,.5);
+            -moz-box-shadow: 2px 2px 2px 2px rgba(0,0,0,.5);
+            -ms-box-shadow: 2px 2px 2px 2px rgba(0,0,0,.5);
+            -o-box-shadow: 2px 2px 2px 2px rgba(0,0,0,.5);
+            box-shadow: 2px 2px 2px 2px rgba(0,0,0,.5);
+            position:absolute;
+            top: -500px;
+            left: -500px;
+            -webkit-transition: all 1s ease;
+            -moz-transition: all 1s ease;
+            -ms-transition: all 1s ease;
+            -o-transition: all 1s ease;
+            transition: all 1s ease;
+            cursor: pointer;
+        }
+        #container .img span{
+            width: 125px;
+            height: 125px;
+            display: block;
+            opacity: 0;
+            -webkit-transition: all 1s ease;
+            -moz-transition: all 1s ease;
+            -ms-transition: all 1s ease;
+            -o-transition: all 1s ease;
+            transition: all 1s ease;
+        }
+        #prev,#next{
+            width: 60px;
+            height: 60px;
+            background-color: #FFFFFF;
+            position: absolute;
+            cursor: pointer;
+            top: 50%;
+            margin-top: -30px;
+            background-position: center;
+            display: none;
+        }
+        #prev{
+            background-image: url(img/prev.png);
+            background-repeat: no-repeat;
+            left: 0;
+            -webkit-border-radius: 0 8px 8px 0;
+            -moz-border-radius: 0 8px 8px 0;
+            -ms-border-radius: 0 8px 8px 0;
+            -o-border-radius: 0 8px 8px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        #next{
+            background-image: url(img/next.png);
+            background-repeat: no-repeat;
+            right: 0;
+            -webkit-border-radius: 8px 0 0 8px;
+            -moz-border-radius: 8px 0 0 8px;
+            -ms-border-radius: 8px 0 0 8px;
+            -o-border-radius: 8px 0 0 8px;
+            border-radius: 8px 0 0 8px;
+        }
+    </style>
+</head>
+    <body>
+        <div id="container"></div>
+        <div id="prev"></div>
+        <div id="next"></div>
+        <script>
+            var ROW = 4, COL = 6, NUM = ROW * COL, BIG_W = 750, BIG_H = 500, THUMBS_W = 125, THUMBS_H = 125;
+            var count = 0;
+            var aImgs;
+            var fGapRow;
+            var fGapCol;
+            var index = 0;
+            var oContainer = document.getElementById("container");
+            var oPrev = document.getElementById("prev");
+            var oNext = document.getElementById("next");
+            for(var i=0; i<NUM; i++){
+                var oThumbs = new Image();
+                oThumbs.onload = function(){
+                    count++;
+                    if(count == NUM * 2){
+                        loadsuccess();
+                    }
+                };
+                oThumbs.src = "img/thumbs/" + (i + 1) + ".jpg";
+
+                var oBigImg = new Image();
+                oBigImg.onload = function(){
+                    count++;
+                    if(count == NUM * 2){
+                        loadsuccess();
+                    }
+                };
+                oBigImg.src = "img/" + (i + 1) + ".jpg";
+            }
+
+            function loadsuccess(){
+                for(var i=0; i<ROW; i++){
+                    for(var j=0; j<COL; j++){
+                        index++;
+                        var oDiv = document.createElement("div");
+                        oDiv.className = "img";
+                        oContainer.appendChild(oDiv);
+                        oDiv.innerHTML = "<span></span>";
+                        oDiv.style.backgroundImage = "url(img/thumbs/" + index + ".jpg)";
+                        oDiv.pos = {
+                            row: i,
+                            col: j
+                        };
+                        oDiv.index = index;
+                    }
+                }
+                aImgs = document.getElementsByClassName("img");
+                fGapRow = (oContainer.offsetWidth - oDiv.offsetWidth * 6) / (COL + 1);
+                fGapCol = (oContainer.offsetHeight - oDiv.offsetHeight * 4) / (ROW + 1);
+                for(var i=0; i<NUM; i++){
+                    aImgs[i].style.transitionDelay = (NUM - i) * 100 + "ms";
+                    aImgs[i].style.top = (aImgs[0].offsetHeight + fGapCol) * aImgs[i].pos.row + fGapCol + "px";
+                    aImgs[i].style.left = (aImgs[0].offsetWidth + fGapRow) * aImgs[i].pos.col + fGapCol + "px";
+                    aImgs[i].style.transform = "rotate(" + (Math.random() * 40 - 20) + "deg)";
+                }
+            }
+
+            var bFlag = true;
+            oContainer.onclick = function(e){
+                if(this != e.target){
+                    if(bFlag){
+                        var fBigGapRow = (oContainer.offsetWidth - BIG_W) / 2;
+                        var fBigGapCol = (oContainer.offsetHeight - BIG_H) / 2;
+                        for(var i=0; i<NUM; i++){
+                            aImgs[i].style.borderWidth = "1px";
+                            aImgs[i].style.top = THUMBS_H  * aImgs[i].pos.row + fBigGapCol + "px";
+                            aImgs[i].style.left = THUMBS_W * aImgs[i].pos.col + fBigGapRow + "px";
+                            aImgs[i].style.transform = "rotate(0deg)";
+                            aImgs[i].style.transitionDelay = "0ms";
+                            var oSpan = aImgs[i].getElementsByTagName("span")[0];
+                            if(e.target.className == "img"){
+                                index = e.target.index;
+                            }else{
+                                index = e.target.parentNode.index;
+                            }
+                            oSpan.style.backgroundImage = "url(img/" + index + ".jpg)";
+                            oSpan.style.backgroundPosition = -THUMBS_W * aImgs[i].pos.col + "px " + (-THUMBS_H * aImgs[i].pos.row) + "px";
+                            oSpan.style.opacity = "1";
+                        }
+                        oPrev.style.display = oNext.style.display = "block";
+                    }else{
+                        for(var i=0; i<NUM; i++){
+                            aImgs[i].style.borderWidth = "5px";
+                            aImgs[i].style.top = (aImgs[0].offsetHeight + fGapCol) * aImgs[i].pos.row + fGapCol + "px";
+                            aImgs[i].style.left = (aImgs[0].offsetWidth + fGapRow) * aImgs[i].pos.col + fGapCol + "px";
+                            aImgs[i].style.transform = "rotate(" + (Math.random() * 40 - 20) + "deg)";
+                            var oSpan = aImgs[i].getElementsByTagName("span")[0];
+                            oSpan.style.opacity = 0;
+                        }
+                        oPrev.style.display = oNext.style.display = "none";
+                    }
+                }
+                bFlag = !bFlag;
+            };
+
+            oPrev.onclick = oNext.onclick = function(){
+                if(this == oPrev){
+                    index--;
+                    if(index == 0){
+                        index = NUM + 1;
+                    }
+                }else{
+                    index++;
+                    if(index == NUM){
+                        index = 1;
+                    }
+                }
+                var arr = [];
+                for(var i=0; i<NUM; i++){
+                    arr.push(i);
+                }
+                arr.sort(function(){
+                    return Math.random() - 0.5;
+                });
+                for(i=0; i<aImgs.length; i++){
+                    var oSpan = aImgs[arr[i]].getElementsByTagName("span")[0];
+                    oSpan.style.backgroundImage = "url(img/" + index + ".jpg)";
+                    oSpan.style.transitionDelay = (i + 2) * 50 + "ms";
+                }
+
+            };
+        </script>
+    </body>
+</html>
